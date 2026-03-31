@@ -39,6 +39,8 @@ class AuthService {
       final user = userCredential.user;
       if (user == null) return AuthResult.error;
 
+      await _ensureUserDoc(user);
+
       final isAdmin = await _checkIsAdmin(user.uid);
       if (!isAdmin) {
         await _auth.signOut();
@@ -63,6 +65,22 @@ class AuthService {
       }
       return AuthResult.error;
     }
+  }
+
+  Future<void> _ensureUserDoc(User user) async {
+    final ref = _firestore.collection('users').doc(user.uid);
+    final doc = await ref.get();
+    if (doc.exists) return;
+
+    await ref.set({
+      'uid': user.uid,
+      'email': user.email ?? '',
+      'name': user.displayName ?? '',
+      'photoUrl': user.photoURL ?? '',
+      'isAdmin': false,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
   }
 
   Future<bool> _checkIsAdmin(String uid) async {
