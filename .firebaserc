@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "outfit-app-534c5"
-  }
+    "default": "outfit-app-534c5",
+    "prod": "outfit-app-534c5"
+  },
+  "targets": {},
+  "etags": {}
 }

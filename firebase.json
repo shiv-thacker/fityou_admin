@@ -1,6 +1,5 @@
 {
   "hosting": {
-    "site": "outfit-app-534c5",
     "public": "build/web",
     "ignore": [
       "firebase.json",
