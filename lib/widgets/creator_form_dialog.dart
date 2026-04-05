@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import '../models/creator.dart';
 import '../services/firestore_service.dart';
@@ -67,10 +68,14 @@ class _CreatorFormDialogState extends State<CreatorFormDialog> {
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       if (mounted) {
+        final msg = e is FirebaseException
+            ? '${e.code}: ${e.message ?? e.toString()}'
+            : e.toString();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Error: $e'),
-              backgroundColor: AppTheme.danger),
+            content: Text(msg),
+            backgroundColor: AppTheme.danger,
+          ),
         );
       }
     } finally {

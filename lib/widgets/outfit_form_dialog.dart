@@ -32,6 +32,10 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
   String? _gender;
   String? _category;
 
+  final _tagsCtrl = TextEditingController();
+  final _descriptionCtrl = TextEditingController();
+  List<_OutfitLinkFields> _linkFields = [];
+
   static const _sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   static const _skinTones = [
     'Fair',
@@ -70,6 +74,23 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
       _skinTone = o.skinTone.isNotEmpty ? o.skinTone : null;
       _gender = o.gender.isNotEmpty ? o.gender : null;
       _category = o.category.isNotEmpty ? o.category : null;
+      _tagsCtrl.text = o.tags.join(', ');
+      _descriptionCtrl.text = o.description;
+      _linkFields = o.outfitLinks
+          .map((l) => _OutfitLinkFields.fromLink(l))
+          .toList();
+    }
+    if (_linkFields.isEmpty) {
+      _linkFields = [_OutfitLinkFields.empty()];
+    }
+  }
+
+  void _removeLinkAt(int index) {
+    if (index < 0 || index >= _linkFields.length) return;
+    _linkFields[index].dispose();
+    _linkFields.removeAt(index);
+    if (_linkFields.isEmpty) {
+      _linkFields.add(_OutfitLinkFields.empty());
     }
   }
 
@@ -103,6 +124,11 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
     _imgCtrl1.dispose();
     _imgCtrl2.dispose();
     _imgCtrl3.dispose();
+    _tagsCtrl.dispose();
+    _descriptionCtrl.dispose();
+    for (final row in _linkFields) {
+      row.dispose();
+    }
     super.dispose();
   }
 
@@ -126,6 +152,23 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
       _imgCtrl3.text.trim(),
     ].where((u) => u.isNotEmpty).toList();
 
+    final tags = _tagsCtrl.text
+        .split(',')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+
+    final outfitLinks = <OutfitLink>[];
+    for (final row in _linkFields) {
+      final label = row.labelCtrl.text.trim();
+      final url = row.urlCtrl.text.trim();
+      final price = row.priceCtrl.text.trim();
+      if (label.isEmpty && url.isEmpty && price.isEmpty) continue;
+      outfitLinks.add(
+        OutfitLink(label: label, url: url, price: price),
+      );
+    }
+
     final outfit = Outfit(
       outfitId: widget.outfit?.outfitId ?? '',
       imageUrl: images,
@@ -136,6 +179,9 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
       skinTone: _skinTone ?? '',
       gender: _gender ?? '',
       category: _category ?? '',
+      tags: tags,
+      outfitLinks: outfitLinks,
+      description: _descriptionCtrl.text.trim(),
       createdAt: widget.outfit?.createdAt,
     );
 
@@ -168,7 +214,7 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
           borderRadius: BorderRadius.circular(16)),
       child: ConstrainedBox(
         constraints:
-            const BoxConstraints(maxWidth: 560, maxHeight: 700),
+            const BoxConstraints(maxWidth: 600, maxHeight: 920),
         child: Padding(
           padding: const EdgeInsets.all(28),
           child: Column(
@@ -340,6 +386,130 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
                             ),
                           ],
                         ),
+
+                        const SizedBox(height: 20),
+                        _SectionLabel('Tags'),
+                        TextFormField(
+                          controller: _tagsCtrl,
+                          style: const TextStyle(color: AppTheme.textLight),
+                          decoration: const InputDecoration(
+                            labelText: 'Tags (comma-separated)',
+                            hintText: 'e.g. summer, casual, cotton',
+                            prefixIcon: Icon(Icons.label_outline,
+                                color: AppTheme.textMuted, size: 18),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+                        _SectionLabel('Outfit links'),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _linkFields.add(_OutfitLinkFields.empty());
+                              });
+                            },
+                            icon: const Icon(Icons.add, size: 18),
+                            label: const Text('Add link'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppTheme.accent,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          'Label, shop URL, and optional price per piece. You can remove any row; an empty row stays for new links.',
+                          style: TextStyle(
+                            color: AppTheme.textMuted.withOpacity(0.9),
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        ...List.generate(_linkFields.length, (i) {
+                          final row = _linkFields[i];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: TextFormField(
+                                        controller: row.labelCtrl,
+                                        style: const TextStyle(
+                                            color: AppTheme.textLight),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Label',
+                                          hintText: 'T-shirt',
+                                          isDense: true,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    SizedBox(
+                                      width: 104,
+                                      child: TextFormField(
+                                        controller: row.priceCtrl,
+                                        style: const TextStyle(
+                                            color: AppTheme.textLight),
+                                        keyboardType:
+                                            const TextInputType.numberWithOptions(
+                                                decimal: true),
+                                        decoration: const InputDecoration(
+                                          labelText: 'Price',
+                                          hintText: '29.99',
+                                          isDense: true,
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      tooltip: 'Remove row',
+                                      onPressed: () {
+                                        setState(() => _removeLinkAt(i));
+                                      },
+                                      icon: const Icon(Icons.close,
+                                          color: AppTheme.textMuted,
+                                          size: 22),
+                                    ),
+                                  ],
+                                ),
+                                TextFormField(
+                                  controller: row.urlCtrl,
+                                  style: const TextStyle(
+                                      color: AppTheme.textLight),
+                                  decoration: const InputDecoration(
+                                    labelText: 'URL',
+                                    hintText: 'https://…',
+                                    isDense: true,
+                                    prefixIcon: Icon(Icons.link,
+                                        color: AppTheme.textMuted,
+                                        size: 18),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+
+                        const SizedBox(height: 8),
+                        _SectionLabel('Description'),
+                        TextFormField(
+                          controller: _descriptionCtrl,
+                          style: const TextStyle(color: AppTheme.textLight),
+                          minLines: 3,
+                          maxLines: 6,
+                          decoration: const InputDecoration(
+                            alignLabelWithHint: true,
+                            labelText: 'Outfit description',
+                            hintText:
+                                'Styling notes, occasion, fabric, fit tips…',
+                            hintStyle: TextStyle(color: AppTheme.textMuted),
+                          ),
+                        ),
                         const SizedBox(height: 28),
                       ],
                     ),
@@ -376,6 +546,36 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
         ),
       ),
     );
+  }
+}
+
+class _OutfitLinkFields {
+  final TextEditingController labelCtrl;
+  final TextEditingController urlCtrl;
+  final TextEditingController priceCtrl;
+
+  _OutfitLinkFields({
+    String label = '',
+    String url = '',
+    String price = '',
+  })  : labelCtrl = TextEditingController(text: label),
+        urlCtrl = TextEditingController(text: url),
+        priceCtrl = TextEditingController(text: price);
+
+  factory _OutfitLinkFields.fromLink(OutfitLink link) {
+    return _OutfitLinkFields(
+      label: link.label,
+      url: link.url,
+      price: link.price,
+    );
+  }
+
+  factory _OutfitLinkFields.empty() => _OutfitLinkFields();
+
+  void dispose() {
+    labelCtrl.dispose();
+    urlCtrl.dispose();
+    priceCtrl.dispose();
   }
 }
 
