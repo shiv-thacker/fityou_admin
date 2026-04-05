@@ -245,7 +245,7 @@ class _OutfitCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
-                // Tags row
+                // Tags row (category + details + custom tags)
                 Wrap(
                   spacing: 6,
                   runSpacing: 6,
@@ -256,8 +256,36 @@ class _OutfitCard extends StatelessWidget {
                       _Tag(outfit.size, AppTheme.card),
                     if (outfit.gender.isNotEmpty)
                       _Tag(outfit.gender, AppTheme.card),
+                    ...outfit.tags
+                        .take(6)
+                        .map((t) => _Tag(t, AppTheme.card)),
+                    if (outfit.tags.length > 6)
+                      _Tag('+${outfit.tags.length - 6}', AppTheme.card),
                   ],
                 ),
+                if (outfit.description.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    outfit.description,
+                    style: const TextStyle(
+                      color: AppTheme.textMuted,
+                      fontSize: 11,
+                      height: 1.25,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+                if (outfit.outfitLinks.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    '${outfit.outfitLinks.length} shop link${outfit.outfitLinks.length == 1 ? '' : 's'}',
+                    style: const TextStyle(
+                      color: AppTheme.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 8),
 
                 // Date + actions

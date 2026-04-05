@@ -19,7 +19,7 @@ class DefaultFirebaseOptions {
 
   // 🔴 Replace ALL values below with your actual Firebase project config
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: "AIzaSyDw-g6206e9TFkl XsoOB6RWN6QSmXMekvM",
+    apiKey: "AIzaSyDw-g6206e9TFklXsoOB6RWN6QSmXMekvM",
     appId: "1:353357868258:web:11458bad4e48352d6e82bb",
     messagingSenderId: "353357868258",
     projectId: "outfit-app-534c5",

@@ -42,6 +42,12 @@ class AuthService {
       await _ensureUserDoc(user);
 
       final isAdmin = await _checkIsAdmin(user.uid);
+      if (kDebugMode) {
+        debugPrint(
+          'Auth: user.uid=${user.uid}, isAdmin=$isAdmin '
+          '(Firestore users/${user.uid}.isAdmin)',
+        );
+      }
       if (!isAdmin) {
         await _auth.signOut();
         await _googleSignIn.signOut();
