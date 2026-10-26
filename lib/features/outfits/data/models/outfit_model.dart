@@ -20,6 +20,9 @@ class OutfitLinkModel extends OutfitLinkEntity {
     );
   }
 
+  factory OutfitLinkModel.fromEntity(OutfitLinkEntity e) =>
+      OutfitLinkModel(label: e.label, url: e.url, price: e.price);
+
   Map<String, dynamic> toMap() => {
         'label': label,
         'url':   url,
@@ -89,8 +92,9 @@ class OutfitModel extends OutfitEntity {
         'gender':        gender,
         'category':      category,
         'tags':          tags,
-        'outfitLinks':
-            outfitLinks.map((l) => (l as OutfitLinkModel).toMap()).toList(),
+        'outfitLinks': outfitLinks
+            .map((l) => OutfitLinkModel.fromEntity(l).toMap())
+            .toList(),
         'description': description,
         if (!preserveCreatedAt)
           'createdAt': createdAt != null
@@ -119,5 +123,5 @@ List<String> _parseStringList(dynamic value) {
 
 List<OutfitLinkEntity> _parseOutfitLinks(dynamic value) {
   if (value is! List) return [];
-  return value.map(OutfitLinkModel.fromMap).toList();
+  return value.map<OutfitLinkEntity>(OutfitLinkModel.fromMap).toList();
 }

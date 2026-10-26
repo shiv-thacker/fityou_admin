@@ -9,7 +9,8 @@ class OutfitsRepositoryImpl implements OutfitsRepository {
   OutfitsRepositoryImpl(this._ds);
 
   @override
-  Stream<List<OutfitEntity>> streamOutfits() => _ds.streamOutfits();
+  Stream<List<OutfitEntity>> streamOutfits() =>
+      _ds.streamOutfits().map((models) => List<OutfitEntity>.from(models));
 
   @override
   Future<void> addOutfit(OutfitEntity outfit) {
