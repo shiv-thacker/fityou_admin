@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../../config/app_colors.dart';
 import '../../../../config/app_size.dart';
+import '../../../../core/config/cloudinary_config.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/widgets/image_upload_field.dart';
 import '../../../creators/data/datasources/creators_datasource.dart';
 import '../../../creators/data/repositories/creators_repository_impl.dart';
 import '../../../creators/domain/entities/creator_entity.dart';
@@ -290,11 +292,24 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
                         const SizedBox(height: 20),
                         _SectionLabel(
                             'Images (up to ${AppConstants.maxOutfitImages})'),
-                        _UrlField(ctrl: _imgCtrl1, label: 'Image URL 1', required: true),
-                        const SizedBox(height: 10),
-                        _UrlField(ctrl: _imgCtrl2, label: 'Image URL 2'),
-                        const SizedBox(height: 10),
-                        _UrlField(ctrl: _imgCtrl3, label: 'Image URL 3'),
+                        ImageUploadField(
+                          controller: _imgCtrl1,
+                          label: 'Image 1',
+                          folder: CloudinaryConfig.outfitsFolder,
+                          required: true,
+                        ),
+                        const SizedBox(height: 14),
+                        ImageUploadField(
+                          controller: _imgCtrl2,
+                          label: 'Image 2',
+                          folder: CloudinaryConfig.outfitsFolder,
+                        ),
+                        const SizedBox(height: 14),
+                        ImageUploadField(
+                          controller: _imgCtrl3,
+                          label: 'Image 3',
+                          folder: CloudinaryConfig.outfitsFolder,
+                        ),
 
                         // Details
                         const SizedBox(height: 20),
@@ -575,30 +590,6 @@ class _AutoFillChip extends StatelessWidget {
             style: const TextStyle(
                 color: AppColors.accent, fontSize: 11),
             overflow: TextOverflow.ellipsis),
-      );
-}
-
-class _UrlField extends StatelessWidget {
-  final TextEditingController ctrl;
-  final String label;
-  final bool required;
-
-  const _UrlField(
-      {required this.ctrl, required this.label, this.required = false});
-
-  @override
-  Widget build(BuildContext context) => TextFormField(
-        controller: ctrl,
-        style: const TextStyle(color: AppColors.textLight),
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: const Icon(Icons.image_outlined,
-              color: AppColors.textMuted, size: 18),
-        ),
-        validator: required
-            ? (v) =>
-                v!.isEmpty ? 'At least one image URL is required' : null
-            : null,
       );
 }
 
