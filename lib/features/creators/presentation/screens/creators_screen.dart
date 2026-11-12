@@ -5,6 +5,7 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_error_view.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/utils/cloudinary_url.dart';
 import '../../data/datasources/creators_datasource.dart';
 import '../../data/repositories/creators_repository_impl.dart';
 import '../../domain/entities/creator_entity.dart';
@@ -343,7 +344,7 @@ class _AvatarCircle extends StatelessWidget {
       backgroundColor: AppColors.card,
       child: ClipOval(
         child: Image.network(
-          url,
+          CloudinaryUrl.deliverable(url),
           width: radius * 2,
           height: radius * 2,
           fit: BoxFit.cover,

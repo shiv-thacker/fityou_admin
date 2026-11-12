@@ -5,6 +5,7 @@ import '../../../../config/app_size.dart';
 import '../../../../core/config/cloudinary_config.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/utils/cloudinary_url.dart';
 import '../../../../core/widgets/image_upload_field.dart';
 import '../../../creators/data/datasources/creators_datasource.dart';
 import '../../../creators/data/repositories/creators_repository_impl.dart';
@@ -258,7 +259,9 @@ class _OutfitFormDialogState extends State<OutfitFormDialog> {
                                                         .profileImage
                                                         .isNotEmpty
                                                     ? NetworkImage(
-                                                        c.profileImage)
+                                                        CloudinaryUrl
+                                                            .deliverable(
+                                                                c.profileImage))
                                                     : null,
                                                 child: c.profileImage
                                                         .isEmpty

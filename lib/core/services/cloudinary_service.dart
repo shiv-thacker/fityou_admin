@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 import '../config/cloudinary_config.dart';
+import '../utils/cloudinary_url.dart';
 import 'image_compressor.dart';
 
 /// Thrown when a Cloudinary upload fails (HTTP error or malformed response).
@@ -72,6 +73,7 @@ abstract final class CloudinaryService {
         'Cloudinary response did not include a secure_url.',
       );
     }
-    return url;
+    // Sources the compressor can't decode (e.g. AVIF) are uploaded as-is.
+    return CloudinaryUrl.deliverable(url);
   }
 }

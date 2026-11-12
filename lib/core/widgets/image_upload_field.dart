@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_size.dart';
 import '../services/cloudinary_service.dart';
+import '../utils/cloudinary_url.dart';
 
 /// Form field for an outfit/model/product image.
 ///
@@ -166,7 +167,7 @@ class _Thumbnail extends StatelessWidget {
           children: [
             if (url.trim().isNotEmpty)
               Image.network(
-                url,
+                CloudinaryUrl.deliverable(url),
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => const Icon(
                     Icons.broken_image_outlined,
